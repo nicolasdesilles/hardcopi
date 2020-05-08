@@ -64,14 +64,13 @@ export default new Vuex.Store({
       state.editorToolbarState.activeStylesButtons = newStyles;
       state.editorToolbarState.activeTextSize = newActiveTextSize;
     },
-    LISTEN_FOR_MATHMODE_COMMAND(state, newText) {
+    LISTEN_FOR_COMMANDS(state, newText) {
       //Looking for differences in text
       var delta = diff.diffChars(state.oldText, newText);
 
       delta.forEach(change => {
+        //Looking for mathModeChar
         if (change.value === '$' && change.added) {
-          //Looking for mathModeChar
-
           if (state.firstCharOfMathModeCommand && state.mathMode === false) {
             //Opening mathMode
 
@@ -131,6 +130,32 @@ export default new Vuex.Store({
             //Listening for another mathModeCommand char
             state.firstCharOfMathModeCommand = true;
           }
+        }
+        //Looking for open parenthesis
+        if (change.value === '(' && change.added) {
+          let selection = state.editor.getSelection();
+          console.log('Parenthesis opened at index ', selection.index);
+
+          //Inserting parenthesis
+          state.editor.insertText(selection.index, ')');
+        }
+
+        //Looking for open bracket
+        if (change.value === '[' && change.added) {
+          let selection = state.editor.getSelection();
+          console.log('Bracket opened at index ', selection.index);
+
+          //Inserting parenthesis
+          state.editor.insertText(selection.index, ']');
+        }
+
+        //Looking for open bracket
+        if (change.value === '{' && change.added) {
+          let selection = state.editor.getSelection();
+          console.log('Bracket opened at index ', selection.index);
+
+          //Inserting parenthesis
+          state.editor.insertText(selection.index, '}');
         }
       });
       state.oldText = newText;
